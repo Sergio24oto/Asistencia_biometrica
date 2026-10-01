@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asistencia 6to Año</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+    <div class="contenedor">
+
+        <header class="encabezado">
+            <div>
+                <h1>Registro de Asistencia</h1>
+                <p>6to año - Fecha: {{ fecha }}</p>
+                <img class="imagenes" src="{{url_for('static',filename='img/LOGO.jpg')}}" alt="Logo de colegio">
+            </div>
+
+            <a class="boton secundario" href="{{ url_for('ver_asistencia') }}">
+                Actualizar
+            </a>
+        </header>
+
+        {% if mensaje %}
+            <div class="mensaje">
+                {{ mensaje }}
+            </div>
+        {% endif %}
+
+        <section class="tarjeta">
+            <h2>Simular lector de huellas</h2>
+
+            <form action="{{ url_for('simular_huella_web') }}" method="POST" class="formulario-simulador">
+                <input 
+                    type="number" 
+                    name="id_huella" 
+                    placeholder="Ingresar ID de huella"
+                    required
+                >
+
+                <button type="submit" class="boton principal">
+                    Registrar huella
+                </button>
+            </form>
+        </section>
+
+        <section class="tarjeta">
+            <h2>Presentes</h2>
+
+            {% if presentes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Apellido</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Hora</th>
+                            <th>Origen</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for alumno in presentes %}
+                            <tr>
+                                <td>{{ alumno.apellido }}</td>
+                                <td>{{ alumno.nombre }}</td>
+                                <td>Presente</td>
+                                <td>{{ alumno.hora }}</td>
+                                <td>
+                                    {% if alumno.origen == "manual" %}
+                                        Manual
+                                    {% else %}
+                                        Huella
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="vacio">Todavía no hay alumnos presentes.</p>
+            {% endif %}
+        </section>
+
+        <section class="tarjeta">
+            <h2>Ausentes</h2>
+
+            {% if ausentes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Apellido</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for alumno in ausentes %}
+                            <tr>
+                                <td>{{ alumno.apellido }}</td>
+                                <td>{{ alumno.nombre }}</td>
+                                <td>Ausente</td>
+                                <td>
+                                    <form action="{{ url_for('marcar_manual', alumno_id=alumno.id) }}" method="POST">
+                                        <button type="submit" class="boton manual">
+                                            Marcar presente manual
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="vacio">No hay alumnos ausentes.</p>
+            {% endif %}
+        </section>
+
+    </div>
+
+</body>
+</html>
