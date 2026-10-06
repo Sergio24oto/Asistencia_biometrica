@@ -1,6 +1,24 @@
 #La logica de asistencia
 from datetime import datetime, date
 from database import obtener_conexion
+from config import HORA_LIMITE_LLEGADA_TARDE
+
+
+def calcular_minutos_tarde(hora_str, limite_str=HORA_LIMITE_LLEGADA_TARDE):
+    try:
+        partes_hora = [int(p) for p in hora_str.split(":")]
+        partes_limite = [int(p) for p in limite_str.split(":")]
+
+        segundos_hora = partes_hora[0] * 3600 + partes_hora[1] * 60 + (partes_hora[2] if len(partes_hora) > 2 else 0)
+        segundos_limite = partes_limite[0] * 3600 + partes_limite[1] * 60 + (partes_limite[2] if len(partes_limite) > 2 else 0)
+
+        diferencia = segundos_hora - segundos_limite
+        if diferencia > 0:
+            return max(1, round(diferencia / 60))
+        return 0
+    except Exception:
+        return 0
+
 
 
 def obtener_fecha_actual():
@@ -141,7 +159,20 @@ def obtener_asistencia_del_dia():
         ORDER BY alumnos.apellido, alumnos.nombre
     """, (fecha,))
 
-    presentes = cursor.fetchall()
+    filas_presentes = cursor.fetchall()
+    presentes = []
+    llegadas_tarde = []
+
+    for fila in filas_presentes:
+        alumno = dict(fila)
+        es_tarde = alumno["hora"] > HORA_LIMITE_LLEGADA_TARDE
+        alumno["es_tarde"] = es_tarde
+        if es_tarde:
+            alumno["minutos_tarde"] = calcular_minutos_tarde(alumno["hora"])
+            llegadas_tarde.append(alumno)
+        else:
+            alumno["minutos_tarde"] = 0
+        presentes.append(alumno)
 
     cursor.execute("""
         SELECT 
@@ -158,8 +189,8 @@ def obtener_asistencia_del_dia():
         ORDER BY alumnos.apellido, alumnos.nombre
     """, (fecha,))
 
-    ausentes = cursor.fetchall()
+    ausentes = [dict(fila) for fila in cursor.fetchall()]
 
     conexion.close()
 
-    return fecha, presentes, ausentes
+    return fecha, presentes, ausentes, llegadas_tarde

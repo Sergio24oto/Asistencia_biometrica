@@ -1,125 +1,810 @@
+/* ==========================================================================
+   SISTEMA DE ASISTENCIA BIOMÉTRICA - ESCUELA ProA SEDE LA PARA
+   Estilos Institucionales y Dashboard de Preceptoría
+   ========================================================================== */
+
+:root {
+    --color-primario: #0e2f56;        /* Azul institucional ProA */
+    --color-primario-hover: #09203c;
+    --color-secundario: #2563eb;      /* Azul acento */
+    --color-fondo: #f1f5f9;           /* Gris pizarra suave */
+    --color-tarjeta: #ffffff;
+    --color-texto-principal: #0f172a;
+    --color-texto-secundario: #64748b;
+    --color-borde: #e2e8f0;
+
+    /* Estados de asistencia */
+    --color-puntual: #16a34a;
+    --color-puntual-fondo: #dcfce7;
+    --color-puntual-borde: #86efac;
+
+    --color-tarde: #d97706;
+    --color-tarde-fondo: #fef3c7;
+    --color-tarde-borde: #f59e0b;
+
+    --color-ausente: #dc2626;
+    --color-ausente-fondo: #fee2e2;
+    --color-ausente-borde: #fca5a5;
+
+    --sombra-suave: 0 4px 18px rgba(15, 23, 42, 0.05);
+    --sombra-destacada: 0 10px 25px rgba(15, 23, 42, 0.08);
+    --radio-tarjeta: 16px;
+}
+
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f6fb;
-    color: #1f2937;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 .contenedor {
-    width: 90%;
-    max-width: 1100px;
-    margin: 30px auto;
+    width: 92%;
+    max-width: 1180px;
+    margin: 25px auto 50px auto;
 }
 
-.encabezado {
+/* ==========================================================================
+   CABECERA Y MEMBRETE INSTITUCIONAL
+   ========================================================================== */
+
+.encabezado-institucional {
+    background: var(--color-tarjeta);
+    padding: 22px 28px;
+    border-radius: var(--radio-tarjeta);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: var(--sombra-suave);
+    border: 1px solid var(--color-borde);
+    gap: 20px;
+}
+
+.marca-escuela {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.escudo-colegio {
+    height: 78px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.06));
+}
+
+.titulos-escuela {
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitulo-institucion {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #475569;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.titulo-colegio {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--color-primario);
+    margin: 0 0 5px 0;
+    letter-spacing: -0.3px;
+}
+
+.detalle-curso {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-texto-secundario);
+}
+
+.badge-fecha {
+    display: inline-block;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.acciones-encabezado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.usuario-badge {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+
+.boton {
+    border: none;
+    text-decoration: none;
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.boton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.boton:active {
+    transform: translateY(0);
+}
+
+.boton.principal {
+    background: var(--color-secundario);
+    color: white;
+}
+.boton.principal:hover {
+    background: #1d4ed8;
+}
+
+.boton.secundario {
+    background: var(--color-primario);
+    color: white;
+}
+.boton.secundario:hover {
+    background: var(--color-primario-hover);
+}
+
+.boton.neutro {
     background: #ffffff;
-    padding: 25px;
-    border-radius: 16px;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+.boton.neutro:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.boton.manual {
+    background: #f59e0b;
+    color: #ffffff;
+    padding: 7px 14px;
+    font-size: 13px;
+}
+.boton.manual:hover {
+    background: #d97706;
+}
+
+.boton.peligro {
+    background: #ef4444;
+    color: white;
+}
+.boton.peligro:hover {
+    background: #dc2626;
+}
+
+/* ==========================================================================
+   ALERTAS Y MENSAJES FLASH
+   ========================================================================== */
+
+.mensaje {
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid transparent;
+}
+
+.mensaje.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #f87171;
+}
+
+.mensaje.exito {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #4ade80;
+}
+
+.mensaje.info {
+    background: #e0f2fe;
+    color: #075985;
+    border-color: #7dd3fc;
+}
+
+/* ==========================================================================
+   PANEL DE MÉTRICAS (KPIs)
+   ========================================================================== */
+
+.panel-metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tarjeta-metrica {
+    background: var(--color-tarjeta);
+    padding: 20px;
+    border-radius: var(--radio-tarjeta);
+    box-shadow: var(--sombra-suave);
+    border: 1px solid var(--color-borde);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarjeta-metrica::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #94a3b8;
+}
+
+.tarjeta-metrica.puntuales::before { background: var(--color-puntual); }
+.tarjeta-metrica.tardanzas::before { background: var(--color-tarde); }
+.tarjeta-metrica.ausentes::before { background: var(--color-ausente); }
+.tarjeta-metrica.presentismo::before { background: var(--color-secundario); }
+
+.tarjeta-metrica.tardanzas.alerta-activa {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.metrica-etiqueta {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.metrica-valor {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.metrica-sub {
+    font-size: 12px;
+    color: var(--color-texto-secundario);
+}
+
+.texto-exito { color: var(--color-puntual) !important; }
+.texto-tarde { color: var(--color-tarde) !important; }
+.texto-peligro { color: var(--color-ausente) !important; }
+
+/* ==========================================================================
+   TARJETAS GENERALES Y SECCIÓN DESTACADA DE TARDANZAS
+   ========================================================================== */
+
+.tarjeta {
+    background: var(--color-tarjeta);
+    padding: 25px 28px;
+    border-radius: var(--radio-tarjeta);
+    margin-bottom: 24px;
+    box-shadow: var(--sombra-suave);
+    border: 1px solid var(--color-borde);
+}
+
+.cabecera-seccion {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 14px;
 }
 
-.encabezado h1 {
+.cabecera-seccion h2 {
     margin: 0;
-    font-size: 30px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-primario);
 }
 
-.encabezado p {
-    margin: 8px 0 0;
-    color: #6b7280;
-}
-
-.tarjeta {
+/* Sección específica de Llegadas Tarde */
+.seccion-tardanzas {
+    border-left: 6px solid var(--color-tarde);
     background: #ffffff;
-    padding: 25px;
-    border-radius: 16px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.08);
 }
 
-.tarjeta h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
+.tardanza-header {
+    border-bottom: 1px solid #fef3c7;
 }
 
-.mensaje {
-    background: #e0f2fe;
-    color: #075985;
-    padding: 15px 20px;
+.titulo-con-icono {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icono-alerta-tarde {
+    font-size: 26px;
+}
+
+.seccion-tardanzas h2 {
+    color: #92400e;
+    font-size: 20px;
+}
+
+.aclaracion-horario {
+    margin: 2px 0 0 0;
+    font-size: 13px;
+    color: #b45309;
+}
+
+.contador-tardanzas {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.contador-tardanzas.con-tardes {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    animation: pulsarSuave 2s infinite;
+}
+
+@keyframes pulsarSuave {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Grilla de alumnos con llegada tarde */
+.grilla-tardanzas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.tarjeta-alumno-tarde {
+    background: #fffdfa;
+    border: 1px solid #fed7aa;
     border-radius: 12px;
-    margin-bottom: 20px;
-    font-weight: bold;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.04);
+}
+
+.avatar-tarde {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffedd5;
+    color: #c2410c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    border: 1px solid #fdba74;
+}
+
+.info-alumno-tarde {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.info-alumno-tarde h3 {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #7c2d12;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.detalles-tarde {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.badge-hora-tarde {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.badge-demora {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.estado-vacio-exito {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.icono-vacio {
+    font-size: 22px;
+}
+
+/* ==========================================================================
+   TABLAS DE ASISTENCIA TIPO REGISTRO OFICIAL
+   ========================================================================== */
+
+.tabla-contenedor {
+    overflow-x: auto;
+}
+
+.tabla-asistencia {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tabla-asistencia thead th {
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--color-borde);
+    text-align: left;
+}
+
+.tabla-asistencia tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--color-borde);
+    vertical-align: middle;
+}
+
+.tabla-asistencia tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.fila-tarde {
+    background-color: #fffdf5;
+}
+
+.col-numero {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.col-nombre {
+    font-size: 15px;
+    color: #0f172a;
+}
+
+.col-hora code {
+    background: #f1f5f9;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: #334155;
+}
+
+/* Badges de estado */
+.badge-estado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-estado.puntual {
+    background: var(--color-puntual-fondo);
+    color: var(--color-puntual);
+    border: 1px solid var(--color-puntual-borde);
+}
+
+.badge-estado.tarde {
+    background: var(--color-tarde-fondo);
+    color: var(--color-tarde);
+    border: 1px solid var(--color-tarde-borde);
+}
+
+.badge-estado.ausente {
+    background: var(--color-ausente-fondo);
+    color: var(--color-ausente);
+    border: 1px solid var(--color-ausente-borde);
+}
+
+.badge-origen {
+    display: inline-block;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.contador-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.contador-badge.presente {
+    background: var(--color-puntual-fondo);
+    color: var(--color-puntual);
+}
+
+.contador-badge.ausente {
+    background: var(--color-ausente-fondo);
+    color: var(--color-ausente);
+}
+
+.vacio {
+    color: var(--color-texto-secundario);
+    font-style: italic;
+    padding: 15px 0;
+    margin: 0;
+}
+
+.vacio.exito {
+    color: var(--color-puntual);
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* ==========================================================================
+   SIMULADOR DE LECTOR (ESP32)
+   ========================================================================== */
+
+.tarjeta-secundaria {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+}
+
+.tarjeta-secundaria h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #334155;
+}
+
+.texto-ayuda {
+    font-size: 12px;
+    color: #64748b;
 }
 
 .formulario-simulador {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .formulario-simulador input {
-    padding: 12px;
-    border: 1px solid #d1d5db;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
     border-radius: 10px;
-    font-size: 16px;
-    width: 220px;
+    font-size: 14px;
+    width: 250px;
+    outline: none;
 }
 
-.boton {
-    border: none;
-    text-decoration: none;
-    padding: 11px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 15px;
-    display: inline-block;
+.formulario-simulador input:focus {
+    border-color: var(--color-secundario);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.principal {
-    background: #2563eb;
-    color: white;
+.pie-pagina {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: 30px;
 }
 
-.secundario {
-    background: #111827;
-    color: white;
+/* ==========================================================================
+   PANTALLA DE LOGIN
+   ========================================================================== */
+
+.login-contenedor {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #0f2a4a 0%, #1e3a8a 100%);
 }
 
-.manual {
-    background: #f59e0b;
-    color: white;
-}
-
-.boton:hover {
-    opacity: 0.9;
-}
-
-table {
+.login-tarjeta {
+    background: #ffffff;
     width: 100%;
-    border-collapse: collapse;
+    max-width: 400px;
+    padding: 40px 32px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
-thead {
-    background: #eff6ff;
+.login-logo {
+    height: 105px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
 }
 
-th, td {
-    padding: 14px;
+.login-tarjeta h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-primario);
+    margin: 0 0 4px 0;
+}
+
+.login-tarjeta p.subtitulo {
+    margin: 0 0 24px 0;
+    color: var(--color-texto-secundario);
+    font-size: 14px;
+}
+
+.login-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     text-align: left;
-    border-bottom: 1px solid #e5e7eb;
 }
 
-th {
-    color: #1e3a8a;
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.vacio {
-    color: #6b7280;
-    font-style: italic;
+.campo-grupo label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.campo-grupo input {
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.campo-grupo input:focus {
+    border-color: var(--color-secundario);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.boton-completo {
+    width: 100%;
+    margin-top: 10px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 700;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN (WINDOW.PRINT)
+   ========================================================================== */
+
+@media print {
+    body {
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .contenedor {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .no-print,
+    .acciones-encabezado,
+    .boton,
+    .formulario-simulador {
+        display: none !important;
+    }
+
+    .encabezado-institucional,
+    .tarjeta,
+    .tarjeta-metrica {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+    }
+
+    .panel-metricas {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+
+    .tabla-asistencia thead th {
+        background: #eee !important;
+        color: #000 !important;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MÓVILES Y PANTALLAS PEQUEÑAS)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .encabezado-institucional {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .acciones-encabezado {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .titulo-colegio {
+        font-size: 22px;
+    }
+
+    .panel-metricas {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

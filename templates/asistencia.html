@@ -2,121 +2,267 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Asistencia 6to Año</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asistencia - Escuela ProA Sede La Para</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
 </head>
 <body>
 
     <div class="contenedor">
 
-        <header class="encabezado">
-            <div>
-                <h1>Registro de Asistencia</h1>
-                <p>6to año - Fecha: {{ fecha }}</p>
-                <img class="imagenes" src="{{url_for('static',filename='img/LOGO.jpg')}}" alt="Logo de colegio">
+        <!-- Membrete y Cabecera Institucional -->
+        <header class="encabezado-institucional">
+            <div class="marca-escuela">
+                <img class="escudo-colegio" src="{{ url_for('static', filename='img/LOGO.jpg') }}" alt="Escuela ProA Sede La Para">
+                <div class="titulos-escuela">
+                    <span class="subtitulo-institucion">GOBIERNO DE CÓRDOBA • MINISTERIO DE EDUCACIÓN</span>
+                    <h1 class="titulo-colegio">ESCUELA ProA • SEDE LA PARA</h1>
+                    <p class="detalle-curso">
+                        <strong>Registro Diario de Asistencia</strong> — 6to Año &bull; <span class="badge-fecha">📅 {{ fecha }}</span>
+                    </p>
+                </div>
             </div>
 
-            <a class="boton secundario" href="{{ url_for('ver_asistencia') }}">
-                Actualizar
-            </a>
+            <div class="acciones-encabezado">
+                <div class="usuario-badge">
+                    <span class="icono-usuario">👤</span>
+                    <span>{{ session.get('usuario', 'Preceptora') }}</span>
+                </div>
+                <button type="button" class="boton neutro boton-imprimir" onclick="window.print()" title="Imprimir parte diario">
+                    🖨️ Imprimir
+                </button>
+                <a class="boton secundario" href="{{ url_for('ver_asistencia') }}" title="Actualizar datos">
+                    🔄 Actualizar
+                </a>
+                <a class="boton peligro" href="{{ url_for('logout') }}" title="Cerrar sesión">
+                    🚪 Salir
+                </a>
+            </div>
         </header>
 
+        <!-- Mensajes Flash / Notificaciones -->
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, msg in mensajes %}
+                    <div class="mensaje {{ categoria }}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         {% if mensaje %}
-            <div class="mensaje">
+            <div class="mensaje info">
                 {{ mensaje }}
             </div>
         {% endif %}
 
+        <!-- Panel de Métricas / KPIs del Día -->
+        <section class="panel-metricas">
+            <div class="tarjeta-metrica">
+                <span class="metrica-etiqueta">Total Alumnos</span>
+                <span class="metrica-valor">{{ total_matriculados }}</span>
+                <span class="metrica-sub">Matriculados</span>
+            </div>
+
+            <div class="tarjeta-metrica puntuales">
+                <span class="metrica-etiqueta">A Horario</span>
+                <span class="metrica-valor texto-exito">{{ total_puntuales }}</span>
+                <span class="metrica-sub">Antes de 08:10 hs</span>
+            </div>
+
+            <div class="tarjeta-metrica tardanzas {% if total_tardes > 0 %}alerta-activa{% endif %}">
+                <span class="metrica-etiqueta">Llegadas Tarde</span>
+                <span class="metrica-valor texto-tarde">{{ total_tardes }}</span>
+                <span class="metrica-sub">Posterior a 08:10 hs</span>
+            </div>
+
+            <div class="tarjeta-metrica ausentes">
+                <span class="metrica-etiqueta">Ausentes</span>
+                <span class="metrica-valor texto-peligro">{{ total_ausentes }}</span>
+                <span class="metrica-sub">Sin registro</span>
+            </div>
+
+            <div class="tarjeta-metrica presentismo">
+                <span class="metrica-etiqueta">% Presentismo</span>
+                <span class="metrica-valor">{{ porcentaje_asistencia }}%</span>
+                <span class="metrica-sub">{{ total_presentes }} presentes de {{ total_matriculados }}</span>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DESTACADA: LLEGADAS TARDE (> 08:10 hs) -->
+        <section class="tarjeta seccion-tardanzas">
+            <div class="cabecera-seccion tardanza-header">
+                <div class="titulo-con-icono">
+                    <span class="icono-alerta-tarde">⚠️</span>
+                    <div>
+                        <h2>Llegadas Tarde</h2>
+                        <p class="aclaracion-horario">Ingresos registrados después de las <strong>08:10 hs</strong></p>
+                    </div>
+                </div>
+                <span class="contador-tardanzas {% if total_tardes > 0 %}con-tardes{% endif %}">
+                    {{ total_tardes }} {% if total_tardes == 1 %}alumno{% else %}alumnos{% endif %}
+                </span>
+            </div>
+
+            {% if llegadas_tarde %}
+                <div class="grilla-tardanzas">
+                    {% for alumno in llegadas_tarde %}
+                        <div class="tarjeta-alumno-tarde">
+                            <div class="avatar-tarde">
+                                <span>{{ alumno.apellido[:1] }}{{ alumno.nombre[:1] }}</span>
+                            </div>
+                            <div class="info-alumno-tarde">
+                                <h3 class="nombre-completo">{{ alumno.apellido }}, {{ alumno.nombre }}</h3>
+                                <div class="detalles-tarde">
+                                    <span class="badge-hora-tarde">⏰ {{ alumno.hora }}</span>
+                                    {% if alumno.minutos_tarde > 0 %}
+                                        <span class="badge-demora">+{{ alumno.minutos_tarde }} min</span>
+                                    {% endif %}
+                                    <span class="badge-origen">
+                                        {% if alumno.origen == "manual" %}✍️ Manual{% else %}👆 Huella{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="estado-vacio-exito">
+                    <span class="icono-vacio">🎉</span>
+                    <p><strong>Excelente: no hay llegadas tarde registradas hoy.</strong> Todos los alumnos presentes ingresaron a horario (antes de las 08:10 hs).</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- SECCIÓN: REGISTRO GENERAL DE PRESENTES -->
         <section class="tarjeta">
-            <h2>Simular lector de huellas</h2>
+            <div class="cabecera-seccion">
+                <h2>Alumnos Presentes</h2>
+                <span class="contador-badge presente">{{ presentes|length }} en aula</span>
+            </div>
+
+            {% if presentes %}
+                <div class="tabla-contenedor">
+                    <table class="tabla-asistencia">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Apellido y Nombre</th>
+                                <th>Hora Ingreso</th>
+                                <th>Puntualidad</th>
+                                <th>Origen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alumno in presentes %}
+                                <tr class="{% if alumno.es_tarde %}fila-tarde{% endif %}">
+                                    <td class="col-numero">{{ loop.index }}</td>
+                                    <td class="col-nombre">
+                                        <strong>{{ alumno.apellido }}</strong>, {{ alumno.nombre }}
+                                    </td>
+                                    <td class="col-hora">
+                                        <code>{{ alumno.hora }}</code>
+                                    </td>
+                                    <td>
+                                        {% if alumno.es_tarde %}
+                                            <span class="badge-estado tarde">
+                                                ⚠️ Llegada Tarde (+{{ alumno.minutos_tarde }} min)
+                                            </span>
+                                        {% else %}
+                                            <span class="badge-estado puntual">
+                                                ✓ A horario
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge-origen">
+                                            {% if alumno.origen == "manual" %}
+                                                ✍️ Manual
+                                            {% else %}
+                                                👆 Huella
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="vacio">Todavía no se registraron ingresos en la fecha.</p>
+            {% endif %}
+        </section>
+
+        <!-- SECCIÓN: ALUMNOS AUSENTES -->
+        <section class="tarjeta">
+            <div class="cabecera-seccion">
+                <h2>Alumnos Ausentes</h2>
+                <span class="contador-badge ausente">{{ ausentes|length }} ausentes</span>
+            </div>
+
+            {% if ausentes %}
+                <div class="tabla-contenedor">
+                    <table class="tabla-asistencia">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Apellido y Nombre</th>
+                                <th>Estado</th>
+                                <th style="text-align: right;">Acción de Preceptoría</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alumno in ausentes %}
+                                <tr>
+                                    <td class="col-numero">{{ loop.index }}</td>
+                                    <td class="col-nombre">
+                                        <strong>{{ alumno.apellido }}</strong>, {{ alumno.nombre }}
+                                    </td>
+                                    <td>
+                                        <span class="badge-estado ausente">Ausente</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <form action="{{ url_for('marcar_manual', alumno_id=alumno.id) }}" method="POST" style="margin: 0; display: inline;">
+                                            <button type="submit" class="boton manual" title="Registrar como presente manual">
+                                                ✍️ Marcar Presente Manual
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="vacio exito">¡Asistencia completa! No hay alumnos ausentes en la fecha.</p>
+            {% endif %}
+        </section>
+
+        <!-- SECCIÓN SECUNDARIA: SIMULADOR DE LECTOR BIOMÉTRICO (ESP32) -->
+        <section class="tarjeta tarjeta-secundaria no-print">
+            <div class="cabecera-seccion">
+                <h3>🛠️ Simulador de Lector Biométrico (ESP32)</h3>
+                <span class="texto-ayuda">Herramienta de pruebas de preceptoría</span>
+            </div>
 
             <form action="{{ url_for('simular_huella_web') }}" method="POST" class="formulario-simulador">
                 <input 
                     type="number" 
                     name="id_huella" 
-                    placeholder="Ingresar ID de huella"
+                    placeholder="Ingresar ID de huella (ej: 1)"
+                    min="1"
                     required
                 >
-
                 <button type="submit" class="boton principal">
-                    Registrar huella
+                    👆 Simular Lectura de Huella
                 </button>
             </form>
         </section>
 
-        <section class="tarjeta">
-            <h2>Presentes</h2>
-
-            {% if presentes %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Apellido</th>
-                            <th>Nombre</th>
-                            <th>Estado</th>
-                            <th>Hora</th>
-                            <th>Origen</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for alumno in presentes %}
-                            <tr>
-                                <td>{{ alumno.apellido }}</td>
-                                <td>{{ alumno.nombre }}</td>
-                                <td>Presente</td>
-                                <td>{{ alumno.hora }}</td>
-                                <td>
-                                    {% if alumno.origen == "manual" %}
-                                        Manual
-                                    {% else %}
-                                        Huella
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="vacio">Todavía no hay alumnos presentes.</p>
-            {% endif %}
-        </section>
-
-        <section class="tarjeta">
-            <h2>Ausentes</h2>
-
-            {% if ausentes %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Apellido</th>
-                            <th>Nombre</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for alumno in ausentes %}
-                            <tr>
-                                <td>{{ alumno.apellido }}</td>
-                                <td>{{ alumno.nombre }}</td>
-                                <td>Ausente</td>
-                                <td>
-                                    <form action="{{ url_for('marcar_manual', alumno_id=alumno.id) }}" method="POST">
-                                        <button type="submit" class="boton manual">
-                                            Marcar presente manual
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="vacio">No hay alumnos ausentes.</p>
-            {% endif %}
-        </section>
+        <footer class="pie-pagina no-print">
+            <p>Sistema de Gestión de Asistencia Biométrica &bull; Escuela ProA Sede La Para &bull; Ciclo Lectivo 2026</p>
+        </footer>
 
     </div>
 

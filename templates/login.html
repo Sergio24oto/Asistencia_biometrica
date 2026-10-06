@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Asistencia ProA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+    <div class="login-contenedor">
+        <div class="login-tarjeta">
+            <img class="login-logo" src="{{ url_for('static', filename='img/LOGO.jpg') }}" alt="Escuela ProA Sede La Para">
+            
+            <h1>Escuela ProA</h1>
+            <p class="subtitulo">Sede La Para &bull; Sistema de Asistencia</p>
+
+            {% with mensajes = get_flashed_messages(with_categories=true) %}
+                {% if mensajes %}
+                    {% for categoria, mensaje in mensajes %}
+                        <div class="mensaje {{ categoria }}">
+                            {{ mensaje }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST" class="login-formulario">
+                <div class="campo-grupo">
+                    <label for="usuario">Usuario</label>
+                    <input 
+                        type="text" 
+                        id="usuario" 
+                        name="usuario" 
+                        placeholder="Ingresa tu usuario" 
+                        required 
+                        autofocus
+                    >
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="clave">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="clave" 
+                        name="clave" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="boton principal boton-completo">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
