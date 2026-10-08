@@ -1,7 +1,27 @@
 #La logica de asistencia
-from datetime import datetime, date
+from datetime import datetime, timezone, timedelta
 from database import obtener_conexion
-from config import HORA_LIMITE_LLEGADA_TARDE
+from config import HORA_LIMITE_LLEGADA_TARDE, HORA_INICIO_JORNADA
+
+# Zona horaria oficial de Argentina (Córdoba / La Para): UTC-3
+ZONA_ARGENTINA = timezone(timedelta(hours=-3))
+
+
+def obtener_fecha_actual():
+    return datetime.now(ZONA_ARGENTINA).date().isoformat()
+
+
+def obtener_hora_actual():
+    return datetime.now(ZONA_ARGENTINA).strftime("%H:%M:%S")
+
+
+def es_horario_tardanza(hora_str):
+    """
+    Un alumno está 'A horario' exclusivamente si ingresa dentro de la jornada escolar:
+    entre HORA_INICIO_JORNADA (06:30:00) y HORA_LIMITE_LLEGADA_TARDE (08:10:00).
+    Cualquier ingreso posterior a las 08:10 hs (o fuera del rango matutino) es llegada tarde.
+    """
+    return not (HORA_INICIO_JORNADA <= hora_str <= HORA_LIMITE_LLEGADA_TARDE)
 
 
 def calcular_minutos_tarde(hora_str, limite_str=HORA_LIMITE_LLEGADA_TARDE):
@@ -19,14 +39,6 @@ def calcular_minutos_tarde(hora_str, limite_str=HORA_LIMITE_LLEGADA_TARDE):
     except Exception:
         return 0
 
-
-
-def obtener_fecha_actual():
-    return date.today().isoformat()
-
-
-def obtener_hora_actual():
-    return datetime.now().strftime("%H:%M:%S")
 
 
 def buscar_alumno_por_huella(id_huella):
@@ -165,7 +177,7 @@ def obtener_asistencia_del_dia():
 
     for fila in filas_presentes:
         alumno = dict(fila)
-        es_tarde = alumno["hora"] > HORA_LIMITE_LLEGADA_TARDE
+        es_tarde = es_horario_tardanza(alumno["hora"])
         alumno["es_tarde"] = es_tarde
         if es_tarde:
             alumno["minutos_tarde"] = calcular_minutos_tarde(alumno["hora"])
